@@ -37,7 +37,7 @@ def chat():
 
     try:
         response = model.generate_content(full_prompt)
-        reply = response.text.strip()  # Removes trailing newlines and spaces
+        reply = response.text.strip().replace('\n', ' ')  # Removes ALL newlines from the reply
     except Exception as e:
         reply = f"Error from Gemini: {str(e)}"
 
