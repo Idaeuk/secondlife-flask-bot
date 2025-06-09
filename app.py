@@ -8,7 +8,7 @@ app = Flask(__name__)
 GOOGLE_API_KEY = "AIzaSyCvGMBzn8mHAXQQCwDg2gZmaRHh2zFSbVY"
 genai.configure(api_key=GOOGLE_API_KEY)
 
-# Use the correct model name for Gemini API v1 (free or paid)
+# THIS IS THE ONLY SUPPORTED MODEL NAME FOR GEMINI TEXT GENERATION (free or paid)
 model = genai.GenerativeModel("models/gemini-1.0-pro-latest")
 
 personality = (
