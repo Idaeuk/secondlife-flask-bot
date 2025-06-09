@@ -6,20 +6,20 @@ import json
 
 app = Flask(__name__)
 
-# --- Config ---
+# === CONFIGURATION ===
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
-    GEMINI_API_KEY = "AIzaSyAmE4b_NhI9FhYhmOaFawQAnMbdlzRbMiU"
+    GEMINI_API_KEY = "AIzaSyBRB8BS7QIxCq5Mh3kmEtvN4_6ShOBYjf4"
 
 JARL_UUID = "5f56e25e-ce4e-415d-b8dc-21447d44c517"
 MILADY_UUID = "3fbafd78-86af-4d80-868d-ec019aef6c09"
 NICKNAMES_FILE = "nicknames.json"
 
-# --- Gemini Setup ---
+# === GEMINI SETUP ===
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel("gemini-2.0-flash")
 
-# --- Persistent Nicknames ---
+# === PERSISTENT NICKNAMES ===
 def load_nicknames():
     if os.path.exists(NICKNAMES_FILE):
         with open(NICKNAMES_FILE, "r") as f:
@@ -39,7 +39,7 @@ def set_nickname(uuid, nickname):
     nicknames[uuid] = nickname
     save_nicknames(nicknames)
 
-# --- Time/Season helpers ---
+# === TIME AND SEASON HELPERS ===
 def get_time_of_day():
     hour = datetime.datetime.utcnow().hour
     if 5 <= hour < 12:
@@ -60,7 +60,7 @@ def get_season():
     else:
         return "autumn"
 
-# --- Conversation Memory ---
+# === CONVERSATION MEMORY ===
 memory = {}  # {uuid: [history]}
 
 def update_memory(uuid, entry):
@@ -89,7 +89,7 @@ def chat():
     time_of_day = data.get('time_of_day', get_time_of_day())
     season = data.get('season', get_season())
 
-    # Nickname set command (optional)
+    # Allow users to set their nickname
     if user_message.lower().startswith("call me "):
         new_nick = user_message[8:].strip()
         set_nickname(uuid, new_nick)
