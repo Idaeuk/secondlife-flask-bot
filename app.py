@@ -4,11 +4,10 @@ import google.generativeai as genai
 
 app = Flask(__name__)
 
-# Your Gemini API key (free or paid)
 GOOGLE_API_KEY = "AIzaSyCvGMBzn8mHAXQQCwDg2gZmaRHh2zFSbVY"
 genai.configure(api_key=GOOGLE_API_KEY)
 
-# For google-generativeai==0.8.5, use "gemini-pro" as the model name
+# This is the correct model name for google-generativeai==0.8.5
 model = genai.GenerativeModel("gemini-pro")
 
 personality = (
