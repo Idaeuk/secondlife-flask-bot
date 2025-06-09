@@ -4,8 +4,8 @@ import google.generativeai as genai
 
 app = Flask(__name__)
 
-# Set up Gemini API
-GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
+# Set your Gemini API key directly in code (not recommended for production)
+GOOGLE_API_KEY = "AIzaSyCvGMBzn8mHAXQQCwDg2gZmaRHh2zFSbVY"
 genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel("gemini-pro")
 
@@ -25,48 +25,53 @@ personality = (
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    data = request.json
-    event = data.get("event")
-    name = data.get("name", "traveler")
-    role = data.get("role", "guest")
-    message = data.get("message", "")
-    repeat = data.get("repeat", False)
+    try:
+        data = request.get_json(force=True)
+        event = data.get("event", "")
+        name = data.get("name", "traveler")
+        role = data.get("role", "guest")
+        message = data.get("message", "")
+        repeat = data.get("repeat", False)
 
-    if event == "greet":
-        if repeat:
+        if event == "greet":
+            if repeat:
+                prompt = (
+                    personality +
+                    f"\nA visitor ({role}) named {name} has returned to the forge within a day. "
+                    "Greet them with a 'back so soon?' or 'welcome back' style message, using their role and nickname if possible. "
+                    "Ask a friendly follow-up question or share a short tale to keep the conversation going."
+                )
+            else:
+                prompt = (
+                    personality +
+                    f"\nA visitor ({role}) named {name} has entered the forge for the first time today. "
+                    "Greet them warmly and invite them to chat, using their role and nickname if possible. "
+                    "Ask what brings them to the forge or share a bit about your day."
+                )
+        elif event == "chat":
             prompt = (
                 personality +
-                f"\nA visitor ({role}) named {name} has returned to the forge within a day. "
-                "Greet them with a 'back so soon?' or 'welcome back' style message, using their role and nickname if possible. "
-                "Ask a friendly follow-up question or share a short tale to keep the conversation going."
+                f"\nContinue your conversation with {name} ({role}). "
+                f"The visitor says: \"{message}\"\n"
+                "Respond in character as Rurik, keeping the conversation lively. "
+                "Ask questions, share stories, and make the visitor feel welcome. "
+                "If they mention an item (like a sword, shield, or collar), agree to craft or give it, but keep chatting."
             )
         else:
             prompt = (
                 personality +
-                f"\nA visitor ({role}) named {name} has entered the forge for the first time today. "
-                "Greet them warmly and invite them to chat, using their role and nickname if possible. "
-                "Ask what brings them to the forge or share a bit about your day."
+                f"\nA visitor ({role}) named {name} is here. "
+                "Greet them in character."
             )
-    elif event == "chat":
-        prompt = (
-            personality +
-            f"\nContinue your conversation with {name} ({role}). "
-            f"The visitor says: \"{message}\"\n"
-            "Respond in character as Rurik, keeping the conversation lively. "
-            "Ask questions, share stories, and make the visitor feel welcome. "
-            "If they mention an item (like a sword, shield, or collar), agree to craft or give it, but keep chatting."
-        )
-    else:
-        prompt = (
-            personality +
-            f"\nA visitor ({role}) named {name} is here. "
-            "Greet them in character."
-        )
 
-    response = model.generate_content(prompt)
-    reply = response.text.strip() if hasattr(response, "text") else str(response)
+        response = model.generate_content(prompt)
+        reply = getattr(response, "text", str(response)).strip()
+        return jsonify({"reply": reply})
 
-    return jsonify({"reply": reply})
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"reply": "Sorry, something went wrong in the forge. Rurik's hammer slipped!"}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
