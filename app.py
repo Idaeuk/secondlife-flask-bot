@@ -8,8 +8,8 @@ app = Flask(__name__)
 GOOGLE_API_KEY = "AIzaSyCvGMBzn8mHAXQQCwDg2gZmaRHh2zFSbVY"
 genai.configure(api_key=GOOGLE_API_KEY)
 
-# THIS IS THE ONLY SUPPORTED MODEL NAME FOR GEMINI TEXT GENERATION (free or paid)
-model = genai.GenerativeModel("models/gemini-1.0-pro-latest")
+# For google-generativeai==0.8.5, use "gemini-pro" as the model name
+model = genai.GenerativeModel("gemini-pro")
 
 personality = (
     "You are Rurik Forgefire, a burly, good-natured Viking blacksmith NPC in a virtual world. "
