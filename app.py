@@ -4,15 +4,12 @@ import google.generativeai as genai
 
 app = Flask(__name__)
 
-# Set your Gemini API key directly (for demo purposes)
+# Your Gemini API key (free or paid)
 GOOGLE_API_KEY = "AIzaSyCvGMBzn8mHAXQQCwDg2gZmaRHh2zFSbVY"
 genai.configure(api_key=GOOGLE_API_KEY)
 
-# Try the most compatible model name
-try:
-    model = genai.GenerativeModel("models/gemini-pro")
-except Exception:
-    model = genai.GenerativeModel("models/gemini-1.0-pro-latest")
+# Use the correct model name for Gemini API v1 (free or paid)
+model = genai.GenerativeModel("models/gemini-1.0-pro-latest")
 
 personality = (
     "You are Rurik Forgefire, a burly, good-natured Viking blacksmith NPC in a virtual world. "
